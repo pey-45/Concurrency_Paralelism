@@ -41,7 +41,6 @@ void printArray(long * v, int n) {
     printf("]");
 }
 
-
 void lockMutex(pthread_mutex_t * mutex, pthread_mutex_t * mutex_d, pthread_mutex_t * mutex_i) {
     pthread_mutex_lock(mutex);
     pthread_mutex_lock(mutex_d);
