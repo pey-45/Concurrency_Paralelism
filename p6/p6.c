@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <sys/time.h>
-#include </usr/include/x86_64-linux-gnu/mpi/mpi.h>
+#include <mpi.h>
 
 #define DEBUG 0
 #define N 10
@@ -36,20 +36,12 @@ int main(int argc, char *argv[]) {
     rest = N%numprocs;
 
     // cálculo de las filas que le corresponden a cada proceso desde la raíz
-    if (!rank) {
-        for (i = 0; i < numprocs; i++) {
-            counts_proc[i] = default_dist + (i < rest? 1:0);
-            desplaz_proc[i] = i > 0? desplaz_proc[i-1] + counts_proc[i-1] : 0;
-            counts[i] = counts_proc[i]*N;
-            desplaz[i] = desplaz_proc[i]*N;
-        }
+    for (i = 0; i < numprocs; i++) {
+        counts_proc[i] = default_dist + (i < rest? 1:0);
+        desplaz_proc[i] = i > 0? desplaz_proc[i-1] + counts_proc[i-1] : 0;
+        counts[i] = counts_proc[i]*N;
+        desplaz[i] = desplaz_proc[i]*N;
     }
-
-    // envio de los arrays a todos los procesos, auxiliar
-    MPI_Bcast(counts_proc, numprocs, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(desplaz_proc, numprocs, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(counts, numprocs, MPI_INT, 0, MPI_COMM_WORLD);
-    MPI_Bcast(desplaz, numprocs, MPI_INT, 0, MPI_COMM_WORLD);
 
     // número de filas correspondientes al proceso actual
     int M = counts_proc[rank];
@@ -92,6 +84,7 @@ int main(int argc, char *argv[]) {
     comm_ms += ms(&tv1, &tv2);
 
     printf("Comm time from process %d (seconds) = %lf\n", rank, (double) comm_ms/1E6);
+    printf("Work time from process %d (seconds) = %lf\n", rank, (double) work_ms/1E6);
 
     if (!rank) {
         if (DEBUG) {
@@ -99,9 +92,6 @@ int main(int argc, char *argv[]) {
                 printf("%f\t ", result[i]);
             }
             printf("\n");
-        } else {
-            printf("Work time (seconds) = %lf\n", (double) work_ms/1E6);
-        }
     }
 
     MPI_Finalize();
