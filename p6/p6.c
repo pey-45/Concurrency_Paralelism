@@ -2,8 +2,8 @@
 #include <sys/time.h>
 #include <mpi.h>
 
-#define DEBUG 0
-#define N 10
+#define DEBUG 1
+#define N 3
 
 double ms(struct timeval * tv1, struct timeval * tv2) {
     return (double)((*tv2).tv_usec - (*tv1).tv_usec) + 1000000 * (double)((*tv2).tv_sec - (*tv1).tv_sec);
@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
                 printf("%f\t ", result[i]);
             }
             printf("\n");
+        }
     }
 
     MPI_Finalize();
