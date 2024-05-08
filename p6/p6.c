@@ -3,7 +3,7 @@
 #include <mpi.h>
 
 #define DEBUG 1
-#define N 3
+#define N 9
 
 double ms(struct timeval * tv1, struct timeval * tv2) {
     return (double)((*tv2).tv_usec - (*tv1).tv_usec) + 1000000 * (double)((*tv2).tv_sec - (*tv1).tv_sec);
@@ -82,9 +82,10 @@ int main(int argc, char *argv[]) {
     gettimeofday(&tv2, NULL); // end
 
     comm_ms += ms(&tv1, &tv2);
-
-    printf("Comm time from process %d (seconds) = %lf\n", rank, (double) comm_ms/1E6);
-    printf("Work time from process %d (seconds) = %lf\n", rank, (double) work_ms/1E6);
+    if (!DEBUG) {
+        printf("Comm time from process %d (seconds) = %lf\n", rank, (double) comm_ms/1E6);
+        printf("Work time from process %d (seconds) = %lf\n", rank, (double) work_ms/1E6);
+    }
 
     if (!rank) {
         if (DEBUG) {
